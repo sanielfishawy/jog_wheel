@@ -1,0 +1,2 @@
+- Put socket server on server
+- Have it execute commands
