@@ -19,18 +19,18 @@ class JogWithSpeed:
     def callback(self, direction=None, speed=None):
         increment = self.get_increment(speed)
         increment = increment if direction == JogWheel.RIGHT else - increment
-        self.logger.debug(increment)
+        self.logger.debug(f"inc={increment} speed={speed}")
         self.transmitter.send_command(self.get_command(increment))
 
     def get_increment(self, speed):
         if not speed:
             return .001
-        elif speed < 30:
+        elif speed < 50:
             return .001
-        elif speed < 80:
+        elif speed < 100:
             return .01
         else:
-            return .1
+            return .05
 
     def get_command(self, increment):
         return ({

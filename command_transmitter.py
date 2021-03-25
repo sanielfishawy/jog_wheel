@@ -12,7 +12,7 @@ class ParameterKeys:
     POSITION_KEY = 'position'
 
 class Transmitter:
-    PATH = 'http://10.0.0.102:5005'
+    PATH = 'http://192.168.1.151:5005'
 
     def __init__(self) -> None:
         self.sio = socketio.Client()

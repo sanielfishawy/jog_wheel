@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 import time
 import logging
+from collections import deque
+from statistics import mean
 
 class JogWheel:
     RIGHT_PIN = 17
@@ -14,6 +16,7 @@ class JogWheel:
         self.setup_logging(log_level)
         self.setup_gpio()
         self.last_event_time = time.monotonic()
+        self.reset_speed_q()
 
     def setup_logging(self, log_level):
         logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: [%(threadName)s] %(message)s ")
@@ -30,6 +33,7 @@ class JogWheel:
 
     def right(self, channel):
         speed = self.get_speed()
+        self.speed_q.appendleft(speed)
         self.logger.debug(f"direction=right speed={speed}")
         self.callback and self.callback(direction=self.__class__.RIGHT, speed=speed)
 
@@ -42,11 +46,16 @@ class JogWheel:
         now = time.monotonic()
         time_lapse = now - self.last_event_time
         self.last_event_time = now
-        return 1.0 / time_lapse
+        speed = 1.0 / time_lapse
+        if speed < 5:
+            self.reset_speed_q()
+        else:
+            self.speed_q.appendleft(speed)
+        return mean(self.speed_q)
+
+    def reset_speed_q(self):
+        self.speed_q = deque(5*[0], 5)
 
 if __name__ == '__main__':
     j = JogWheel()
-
-
-
-pass
+    pass
