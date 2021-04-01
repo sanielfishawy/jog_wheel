@@ -2,6 +2,15 @@ from flask import Flask
 from flask_socketio import SocketIO, send, emit
 from werkzeug import debug
 
+class Commands:
+    SAVE_POSITION = 'save_position'
+    CHANGE_POSITION = 'change_position'
+    UPDATE_STATE = 'update_state'
+    FIND_STOPS = 'find_stops'
+    CLEAR_ERRORS = 'clear_errors'
+    SAVE_REVOLUTIONS_PER_INCH = 'save_revolutions_per_inch'
+    SAVE_ZERO_POSITION = 'save_zero_position'
+    
 app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
