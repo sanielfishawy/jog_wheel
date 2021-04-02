@@ -6,15 +6,14 @@ from socket_client import CommandTransmitter
 
 class JogWithSpeed:
 
-    def __init__(self, log_level=logging.INFO) -> None:
-        self.jog_wheel = JogWheel(callback=self.callback, log_level=logging.INFO)
+    def __init__(self) -> None:
+        self.setup_logging()
+        self.jog_wheel = JogWheel(callback=self.callback)
         self.transmitter = CommandTransmitter.get_instance()
-        self.setup_logging(log_level)
 
-    def setup_logging(self, log_level):
-        logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: [%(threadName)s] %(message)s ")
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(log_level)
+    def setup_logging(self):
+        self.logger = logging.getLogger()
+        self.logger.name=self.__class__.__name__
 
     def callback(self, direction=None, speed=None):
         increment = self.get_increment(speed)
@@ -34,5 +33,5 @@ class JogWithSpeed:
 
 
 if __name__ == '__main__':
-    j = JogWithSpeed(log_level=logging.DEBUG)
-    pass
+    logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: [%(threadName)s] %(message)s ", level=logging.INFO)
+    j = JogWithSpeed()

@@ -16,10 +16,10 @@ class Commands:
 class CommandTransmitter:
 
     _instance = None
-    SERVER_PATH = 'http://192.168.1.159:5005'
+    SERVER_PATH = 'http://192.168.1.159:80'
 
     def __init__(self):
-        logging.basicConfig(level=logging.INFO)
+        self.setup_logging()
 
         if self.__class__._instance:
             raise "Command Transmitter is a singleton. Use get_instance() to get the instance."
@@ -39,15 +39,21 @@ class CommandTransmitter:
         if not cls._instance:
             cls()
         return cls._instance
+
+    def setup_logging(self):
+        self.logger = logging.getLogger()
+        self.logger.name = self.__class__.__name__
+        self.logger.info('test')
     
     def connect_to_server(self):
+        self.logger.info('in connect to server')
         while not self.connected:
             try:
                 self.sio.connect(self.__class__.SERVER_PATH)
-                logging.info('Connected')
+                self.logger.info('Connected')
                 self.connected = True
             except socketio.exceptions.ConnectionError as err:
-                logging.info(f'Connecting to {self.__class__.SERVER_PATH} {str(err)}')
+                self.logger.error(f'Connecting to {self.__class__.SERVER_PATH} {str(err)}')
                 time.sleep(1)
             except:
                 raise
@@ -56,15 +62,10 @@ class CommandTransmitter:
         self.sio.emit(Commands.CHANGE_POSITION, change_inches)
     
     def connect_handler(self):
-        logging.info("Connect")
+        self.logger.info("Connect")
     
     def disconnect_handler(self):
-        logging.info("Disconnect")
+        self.logger.info("Disconnect")
     
     def update_state_handler(self, msg):
-        logging.info(f"update_state {msg}")
-    
-if __name__ == '__main__':
-    ct = CommandTransmitter.get_instance()
-    ct.change_position(1)
-    pass
+        self.logger.debug(f"update_state {msg}")

@@ -11,17 +11,17 @@ class JogWheel:
     RIGHT = 0
     LEFT = 1
 
-    def __init__(self, callback=None, log_level=logging.DEBUG) -> None:
+    def __init__(self, callback=None) -> None:
+        self.setup_logging()
         self.callback = callback
-        self.setup_logging(log_level)
         self.setup_gpio()
         self.last_event_time = time.monotonic()
         self.reset_speed_q()
 
-    def setup_logging(self, log_level):
-        logging.basicConfig(format="%(asctime)s [%(levelname)s] %(name)s: [%(threadName)s] %(message)s ")
-        self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.setLevel(log_level)
+    def setup_logging(self ):
+        self.logger = logging.getLogger()
+        self.logger.name = self.__class__.__name__
+        self.logger.info('test')
 
     def setup_gpio(self):
         GPIO.setmode(GPIO.BCM)
@@ -55,7 +55,3 @@ class JogWheel:
 
     def reset_speed_q(self):
         self.speed_q = deque(5*[0], 5)
-
-if __name__ == '__main__':
-    j = JogWheel()
-    pass
