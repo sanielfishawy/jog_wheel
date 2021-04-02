@@ -2,13 +2,13 @@ import socket
 import logging
 import json
 from jog_wheel import JogWheel
-from command_transmitter import Commands, ParameterKeys, Transmitter
+from socket_client import CommandTransmitter
 
 class JogWithSpeed:
 
     def __init__(self, log_level=logging.INFO) -> None:
         self.jog_wheel = JogWheel(callback=self.callback, log_level=logging.INFO)
-        self.transmitter = Transmitter()
+        self.transmitter = CommandTransmitter.get_instance()
         self.setup_logging(log_level)
 
     def setup_logging(self, log_level):
@@ -20,7 +20,7 @@ class JogWithSpeed:
         increment = self.get_increment(speed)
         increment = increment if direction == JogWheel.RIGHT else - increment
         self.logger.debug(f"inc={increment} speed={speed}")
-        self.transmitter.send_command(self.get_command(increment))
+        self.transmitter.change_position(increment)
 
     def get_increment(self, speed):
         if not speed:
@@ -32,11 +32,6 @@ class JogWithSpeed:
         else:
             return .05
 
-    def get_command(self, increment):
-        return ({
-            ParameterKeys.COMMAND_KEY: Commands.CHANGE_POSITION,
-            ParameterKeys.POSITION_KEY: increment,
-            })
 
 if __name__ == '__main__':
     j = JogWithSpeed(log_level=logging.DEBUG)
